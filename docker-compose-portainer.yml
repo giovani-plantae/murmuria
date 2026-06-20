@@ -13,8 +13,9 @@ services:
     container_name: murmuria
     restart: unless-stopped
     ports:
-      # host:container — the container always listens on 80. Host port from .env.
-      - "${MURMURIA_PORT:-8000}:80"
+      # host:container — the container always listens on 80. Host port defaults to
+      # 8100 (8000 is commonly taken); override with MURMURIA_PORT.
+      - "${MURMURIA_PORT:-8100}:80"
     environment:
       MURMURIA_PORT: "80"
       MURMURIA_LANGUAGE: ${MURMURIA_LANGUAGE:-en}
