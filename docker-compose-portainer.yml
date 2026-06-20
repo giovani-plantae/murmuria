@@ -1,0 +1,39 @@
+# murmuria — Portainer stack using the published image (no build on the host).
+#
+# Deploy in Portainer: Stacks → Add stack → Web editor (paste this) or
+# Repository. To update in place:
+#   docker compose -f docker-compose-portainer.yml pull
+#   docker compose -f docker-compose-portainer.yml up -d
+#
+# The model is baked into the image, so no volume is needed. Tunables come from
+# .env / the stack's environment variables (see .env.example).
+services:
+  murmuria:
+    image: ghcr.io/giovani-plantae/murmuria:latest
+    container_name: murmuria
+    restart: unless-stopped
+    ports:
+      # host:container — the container always listens on 80. Host port from .env.
+      - "${MURMURIA_PORT:-8000}:80"
+    environment:
+      MURMURIA_PORT: "80"
+      MURMURIA_LANGUAGE: ${MURMURIA_LANGUAGE:-en}
+      MURMURIA_CPU: ${MURMURIA_CPU:-}
+    # --- GPU passthrough (Vulkan via /dev/dri) -------------------------------
+    # On a host with no GPU, remove this block and set MURMURIA_CPU=1 in .env
+    # to run on CPU (~10s/clip, no GPU stack needed).
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      # GIDs that own /dev/dri on the Portainer HOST — host-specific, check with
+      #   ls -ln /dev/dri        (here: render=992, video=44)
+      - "992"
+      - "44"
+    healthcheck:
+      # Liveness only: is the port accepting connections? (bash /dev/tcp — the
+      # runtime image has no curl.)
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

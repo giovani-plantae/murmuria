@@ -1,0 +1,13 @@
+# Build context is the repo root; keep only what the image build needs
+# (Cargo.toml, Cargo.lock, src/).
+/target
+/.docker-cache
+/models
+/.git
+/.github
+/tests
+/tools
+/scripts
+/docker
+README.md
+LICENSE

@@ -1,0 +1,54 @@
+# murmuria — always-on transcription server.
+#
+#   cp .env.example .env              # optional: tune MURMURIA_PORT/LANGUAGE/CPU
+#   docker compose up -d --build      # build + start in background
+#   docker compose logs -f            # follow logs
+#   docker compose down               # stop & remove
+#
+# Or deploy as a Stack in Portainer (Stacks → Add stack → Repository, point it
+# at this repo). `restart: unless-stopped` keeps it up across reboots/crashes,
+# the same way you'd run an always-on bot. Values come from .env (see below).
+services:
+  murmuria:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        # Half the cores keeps the (heavy) whisper.cpp + Rust compile from
+        # pegging the machine. Bump on a dedicated build host.
+        BUILD_JOBS: 4
+    image: murmuria
+    container_name: murmuria
+    restart: unless-stopped
+    ports:
+      # host:container — the container always listens on 80 (see MURMURIA_PORT
+      # below). The host port comes from .env; prefix with 127.0.0.1 to bind
+      # localhost only.
+      - "${MURMURIA_PORT:-8000}:80"
+    environment:
+      # The server listens on 80 inside the container (conventional); the host
+      # port is the mapping above. setcap in the Dockerfile lets non-root bind it.
+      MURMURIA_PORT: "80"
+      # Read from .env (see .env.example); fallbacks used when unset.
+      MURMURIA_LANGUAGE: ${MURMURIA_LANGUAGE:-en}
+      MURMURIA_CPU: ${MURMURIA_CPU:-}
+    # Model is baked into the image — no volume needed. To run a different model,
+    # mount it and set MURMURIA_MODEL to its in-container path.
+    # --- GPU passthrough (Vulkan via /dev/dri) -------------------------------
+    # On a host with no GPU, remove this block and set MURMURIA_CPU=1 in .env
+    # to run on CPU (~10s/clip, no GPU stack needed).
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      # GIDs that own /dev/dri on the HOST. These are host-specific — check with
+      #   ls -ln /dev/dri        (here: render=992, video=44)
+      - "992"
+      - "44"
+    healthcheck:
+      # Liveness only: is the port accepting connections? (bash /dev/tcp — the
+      # runtime image has no curl, and `doctor` reloads the model every run.)
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

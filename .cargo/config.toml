@@ -1,0 +1,6 @@
+# Cargo aliases — work even without `just` installed (only the Rust toolchain).
+[alias]
+r = "run --features vulkan"
+rr = "run --release --features vulkan"
+t = "test --features vulkan"
+lint = "clippy --all-targets --features vulkan -- -D warnings"

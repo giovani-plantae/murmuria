@@ -1,0 +1,6 @@
+# Pins the toolchain and auto-installs rustfmt/clippy so `just`/`cargo` work the
+# same on every machine. rustup reads this on the first cargo command.
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]
+profile = "minimal"
