@@ -74,6 +74,7 @@ cp .env.example .env
 | `MURMURIA_LANGUAGE` | `en` | Forced transcription language (whisper code: `en`, `pt`, `es`, …). |
 | `MURMURIA_PORT` | first free from `8000` | Pins the listen port. Unset, the server scans upward from `8000` for a free one (like `artisan serve`). |
 | `MURMURIA_CPU` | _(unset)_ | Set to `1` to force CPU even on a GPU build. |
+| `MURMURIA_ADVERTISE_IP` | auto (primary LAN IP) | IP announced over mDNS. Pin it on multi-homed hosts (Docker/VPN) so clients don't get an unreachable bridge address. |
 
 `just` loads `.env` automatically. The `--port` / `--cpu` CLI flags take
 precedence over the matching variable.
