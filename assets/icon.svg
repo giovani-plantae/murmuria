@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="murmuria">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="0.5" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="128" height="128" rx="29" ry="29" fill="url(#tile)"/>
+  <rect x="0" y="0" width="128" height="128" rx="29" ry="29" fill="url(#sheen)"/>
+  <g fill="#ffffff">
+    <rect x="30.06" y="73.68" width="6.17" height="16.32" rx="3.09"/>
+    <rect x="40.34" y="55.44" width="6.17" height="34.56" rx="3.09"/>
+    <rect x="50.63" y="42" width="6.17" height="36" rx="3.09"/>
+    <rect x="60.91" y="68.88" width="6.17" height="21.12" rx="3.09"/>
+    <rect x="71.2" y="42" width="6.17" height="36" rx="3.09"/>
+    <rect x="81.49" y="55.44" width="6.17" height="34.56" rx="3.09"/>
+    <rect x="91.77" y="73.68" width="6.17" height="16.32" rx="3.09"/>
+  </g>
+</svg>

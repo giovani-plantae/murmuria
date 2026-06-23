@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🌬️ murmuria
+<img src="assets/icon.svg" width="120" height="120" alt="murmuria" />
+
+# murmuria
 
 **Self-hosted speech-to-text, accelerated on your own GPU.**
 
