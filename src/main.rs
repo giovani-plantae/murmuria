@@ -5,6 +5,7 @@
 
 mod audio;
 mod discovery;
+mod inference_request;
 mod server;
 mod transcribe;
 

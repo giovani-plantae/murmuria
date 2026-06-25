@@ -5,6 +5,16 @@ use std::path::Path;
 
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
 
+/// Per-request transcription overrides. A `None` field keeps the server's
+/// configured default (the startup `--language`, and Whisper's own temperature).
+#[derive(Default)]
+pub struct TranscribeOptions {
+    /// A Whisper language code/name (e.g. `pt`, `portuguese`, `auto`).
+    pub language: Option<String>,
+    /// Sampling temperature; the request layer constrains it to `0.0..=1.0`.
+    pub temperature: Option<f32>,
+}
+
 /// Loads a Whisper model once and transcribes 16 kHz mono PCM against it.
 pub struct Transcriber {
     context: WhisperContext,
@@ -32,12 +42,25 @@ impl Transcriber {
         })
     }
 
-    /// Transcribes mono 16 kHz PCM samples into a single text string.
-    pub fn transcribe(&self, samples: &[f32]) -> Result<String, whisper_rs::WhisperError> {
+    /// Transcribes mono 16 kHz PCM samples into a single text string. `options`
+    /// override the forced language and sampling temperature per request; unset
+    /// fields fall back to the server's configured defaults.
+    pub fn transcribe(
+        &self,
+        samples: &[f32],
+        options: &TranscribeOptions,
+    ) -> Result<String, whisper_rs::WhisperError> {
         let mut state = self.context.create_state()?;
 
         let mut params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
-        params.set_language(Some(self.language.as_str()));
+        let language = options
+            .language
+            .as_deref()
+            .unwrap_or(self.language.as_str());
+        params.set_language(Some(language));
+        if let Some(temperature) = options.temperature {
+            params.set_temperature(temperature);
+        }
         params.set_print_special(false);
         params.set_print_progress(false);
         params.set_print_realtime(false);

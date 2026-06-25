@@ -93,7 +93,9 @@ what's missing if something goes sideways.
 
 ## 🎙️ API
 
-- `POST /inference` — multipart `file` (WAV) → `{ "text": ... }`
+- `POST /inference` — multipart `file` (WAV), plus optional `language` (a whisper
+  code/name or `auto`; overrides `MURMURIA_LANGUAGE` for this request), `temperature`
+  (`0.0`–`1.0`) and `response_format` (`json`) → `{ "text": ... }`. Invalid fields get a `400`.
 - `WS /stream` — send binary frames of 16 kHz mono `f32` PCM (LE); receive
   `{"type":"partial","text":...}` every ~2 s (30 s sliding window) and `{"type":"final",...}`
   on any text message (flush) or on close.
