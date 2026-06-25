@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{
     extract::ws::{Message, WebSocket, WebSocketUpgrade},
-    extract::{Multipart, State},
+    extract::{DefaultBodyLimit, Multipart, State},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
@@ -31,7 +31,13 @@ pub struct AppState {
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health))
-        .route("/inference", post(inference))
+        // Axum caps request bodies at 2 MB by default — only ~1 min of 16 kHz
+        // mono WAV — so longer voice messages fail while reading the 'file'
+        // field. Raise it to 50 MB (~27 min) for uploads only.
+        .route(
+            "/inference",
+            post(inference).layer(DefaultBodyLimit::max(50 * 1024 * 1024)),
+        )
         .route("/stream", get(stream))
         .with_state(state)
 }
